@@ -25,16 +25,22 @@ function formatFieldValue(value: unknown, type: SelectionToolbarCustomActionOutp
     return ""
   }
 
-  if (type === "number") {
-    if (typeof value === "number" && Number.isFinite(value)) {
-      return String(value)
-    }
+  if (typeof value === "string") {
+    if (type !== "number") return value
 
     const parsed = Number(value)
-    return Number.isFinite(parsed) ? String(parsed) : String(value)
+    return Number.isFinite(parsed) ? String(parsed) : value
   }
 
-  return typeof value === "string" ? value : String(value)
+  if (typeof value === "number" || typeof value === "boolean" || typeof value === "bigint") {
+    return String(value)
+  }
+
+  if (type === "number") {
+    return ""
+  }
+
+  return JSON.stringify(value)
 }
 
 function buildStructuredObjectSpec(
@@ -122,9 +128,7 @@ const { registry: STRUCTURED_OBJECT_REGISTRY } = defineRegistry(structuredObject
               {getFieldTypeIcon(type)}
               <span className="truncate">{label}</span>
             </div>
-            {speakingEnabled && (
-              <FieldSpeakButton text={value} disabled={speakButtonDisabled} />
-            )}
+            {speakingEnabled && <FieldSpeakButton text={value} disabled={speakButtonDisabled} />}
           </div>
           <div className="text-sm whitespace-pre-wrap break-words [overflow-wrap:anywhere]">
             {pending ? "…" : value || "—"}
@@ -148,9 +152,7 @@ export function StructuredObjectRenderer({
 
   return (
     <div className="space-y-2">
-      {thinking && (
-        <Thinking status={thinking.status} content={thinking.text} />
-      )}
+      {thinking && <Thinking status={thinking.status} content={thinking.text} />}
       <JSONUIProvider registry={STRUCTURED_OBJECT_REGISTRY} initialState={{}}>
         <Renderer spec={spec} registry={STRUCTURED_OBJECT_REGISTRY} loading={isStreaming} />
       </JSONUIProvider>
