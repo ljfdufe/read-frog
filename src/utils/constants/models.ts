@@ -320,6 +320,7 @@ export const LLM_PROVIDER_MODELS = {
     "doubao-seed-1-6-251015",
   ],
   minimax: [
+    "MiniMax-M3",
     "MiniMax-M2.7",
     "MiniMax-M2.7-highspeed",
     "MiniMax-M2.5",
@@ -526,6 +527,13 @@ export const LLM_MODEL_OPTIONS: Array<{
   {
     pattern: /^command-a-reasoning(?:-.+)?$/i,
     options: { thinking: { type: "disabled" } },
+  },
+
+  // MiniMax reasoning-capable models - disable thinking/history by default.
+  // Keep this provider-agnostic because recommendation matching is model-name based.
+  {
+    pattern: /(?:^|\/)minimax-m(?:2(?:[.-].*)?|3)$/i,
+    options: { thinking: { type: "disabled" }, reasoningHistory: "disabled" },
   },
 
   // Fireworks reasoning-focused models - disable thinking/history by default
